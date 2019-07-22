@@ -18,7 +18,7 @@
 
 <script>
 import myHeader from 'components/header/header'
-import mySwiper from 'components/swiper/swiper'
+import mySwiper from './components/swiper'
 export default {
   data () {
     return {
