@@ -13,12 +13,15 @@
       </template>
     </my-header>
     <my-swiper></my-swiper>
+    <albums-list>
+    </albums-list>
   </div>
 </template>
 
 <script>
 import myHeader from 'components/header/header'
 import mySwiper from './components/swiper'
+import albumsList from './components/albumsList'
 export default {
   data () {
     return {
@@ -27,7 +30,8 @@ export default {
   },
   components: {
     myHeader,
-    mySwiper
+    mySwiper,
+    albumsList
   }
 }
 </script>

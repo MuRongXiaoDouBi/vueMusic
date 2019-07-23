@@ -22,8 +22,7 @@ export default {
 .header
   height 50px
   width 100%
-  padding $container-padding-size
-  box-sizing border-box
+  container-padding()
   display flex
   justify-content space-between
   align-items center
