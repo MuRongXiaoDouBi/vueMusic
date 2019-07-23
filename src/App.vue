@@ -1,16 +1,18 @@
 <template>
   <div id="app">
-    <my-home></my-home>
+    <keep-alive :exclude="exclude">
+      <router-view/>
+    </keep-alive>
   </div>
 </template>
 
 <script>
-import myHome from 'pages/home/home.vue'
-
 export default {
   name: 'app',
-  components: {
-    myHome
+  data () {
+    return {
+      exclude: ['Albumlist']
+    }
   }
 }
 </script>

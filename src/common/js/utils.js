@@ -4,7 +4,8 @@ export function initArtists (list) {
     i.push(item.name)
   })
   return i.join('/')
-}
+} 
+
 export default {
   initArtists
 }

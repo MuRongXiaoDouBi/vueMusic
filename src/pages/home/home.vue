@@ -7,9 +7,11 @@
         </span>
       </template>
       <template v-slot:right>
-        <span class="icon">
-          <i class="cubeic-search"></i>
-        </span>
+        <router-link to="/albumlist">
+          <span class="icon right">
+            <i class="cubeic-search"></i>
+          </span>
+        </router-link>
       </template>
     </my-header>
     <my-list></my-list>
@@ -35,6 +37,11 @@ export default {
 <style lang="stylus" scoped>
   .home
     width 100%
+    .right
+      flex-direction row-reverse
     .icon
-      font-size 24px
+      font-size 20px
+      color $color-theme
+      display flex
+      align-items center
 </style>

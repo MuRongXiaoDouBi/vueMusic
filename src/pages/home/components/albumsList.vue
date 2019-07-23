@@ -11,7 +11,7 @@
         nest-mode="native"
         class="list">
         <div class="list-wrapper">
-          <div class="item" v-for="item in data" :key="item.id">
+          <div class="item" v-for="item in data" :key="item.id" @click="goList(item.id, item.name)">
             <img v-lazy="item.imgUrl" alt="" class="img">
             <span class="title">{{item.name}}</span>
             <span class="desc">{{item.artists}}</span>
@@ -32,6 +32,17 @@ export default {
   },
   components: {
     listTitle
+  },
+  methods: {
+    goList(id, name) {
+      this.$router.push({
+        name: 'Albumlist',
+        params: {
+          id,
+          name
+        }
+      })
+    }
   }
 }
 </script>
