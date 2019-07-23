@@ -26,7 +26,8 @@ export default {
 .header
   height 50px
   width 100%
-  position relative
+  position absolute
+  top 0
   container-padding()
   display flex
   justify-content space-between

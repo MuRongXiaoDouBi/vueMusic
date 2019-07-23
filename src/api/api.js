@@ -1,4 +1,6 @@
 import home from './home'
+import list from './list'
 export default {
-    home
+    home,
+    list
 }

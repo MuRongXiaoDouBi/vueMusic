@@ -13,11 +13,13 @@
         </span>
       </template>
     </my-header>
+    <my-list></my-list>
   </div>
 </template>
 
 <script>
 import myHeader from 'components/header/header'
+import myList from './components/albumList'
 export default {
   data () {
     return {
@@ -26,7 +28,8 @@ export default {
     }
   },
   components: {
-    myHeader
+    myHeader,
+    myList
   },
   watch: {
     '$route' (to, from) {
