@@ -19,7 +19,6 @@
 <script>
 import myHeader from 'components/header/header'
 import myList from './components/list'
-
 export default {
   data () {
     return {

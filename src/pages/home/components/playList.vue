@@ -44,6 +44,8 @@ export default {
         height 210px
         .item:first-child
           border-top $border-default-1
+        .item:last-child
+          border 0
         .item
           height 60px
           box-sizing border-box
@@ -60,7 +62,7 @@ export default {
             .title
               width 200px
               color $color-text
-              font-size $font-size-small-s
+              font-size $font-size-small
               margin-bottom 8px
               no-wrap()
             .desc
@@ -71,6 +73,7 @@ export default {
           .iconfont
             font-size 25px
             color $color-theme
+            margin-right 5px
 </style>
 
 <style scoped>

@@ -1,4 +1,4 @@
-export default class Albums {
+export class Albums {
   constructor({
     id,
     name,
@@ -12,10 +12,23 @@ export default class Albums {
   }
 }
 
-Albums.initArtists = function (list) {
-  let i = []
-  list.map(item => {
-    i.push(item.name)
-  })
-  return i.join('/')
+export class NewSongs {
+  constructor({
+    id,
+    name,
+    imgUrl,
+    artists,
+    subType
+  }) {
+    this.id = id
+    this.name = name
+    this.imgUrl = imgUrl
+    this.artists = artists
+    this.subType = subType
+  }
+}
+
+export default {
+  Albums,
+  NewSongs
 }
