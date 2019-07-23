@@ -5,7 +5,7 @@
 :bulb: Vue全家桶：vue2.5 + vuex + vue-router  
 :bulb: webpack、ES6、ESlint、Stylus  
 :bulb: 第三方插件：axios、better-scroll、fastclick  
-:bulb: ui库：cube-ui
+:bulb: ui库：cube-ui  
 :bulb: 数据：NeteaseCloudMusicApi
 
 ## :airplane: 构建与运行
