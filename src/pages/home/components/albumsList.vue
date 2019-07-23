@@ -6,11 +6,12 @@
       </list-title>
       <cube-scroll
         ref="scroll"
-        :data="albums"
+        :data="data"
         direction="horizontal"
+        nest-mode="native"
         class="list">
         <div class="list-wrapper">
-          <div class="item" v-for="item in albums" :key="item.id">
+          <div class="item" v-for="item in data" :key="item.id">
             <img v-lazy="item.imgUrl" alt="" class="img">
             <span class="title">{{item.name}}</span>
             <span class="desc">{{item.artists}}</span>
@@ -23,45 +24,23 @@
 
 <script>
 import listTitle from 'components/listTitle/listTitle'
-import Albums from 'common/js/class'
 export default {
-  data () {
-    return {
-      items: [1,2],
-      albums: []
+  props: {
+    data: {
+      type: Array
     }
   },
   components: {
     listTitle
-  },
-  methods: {
-    async _getNewAlbum () {
-      const {albums} = await this.$api.home.apiNewAlbum()
-      let items = []
-      albums.map(item => {
-        items.push(new Albums({
-          id: item.id,
-          name: item.name,
-          imgUrl: item.picUrl,
-          artists: Albums.initArtists(item.artists)
-        }))
-      })
-      this.albums = items
-    },
-    
-  },
-  created () {
-    this._getNewAlbum()
   }
 }
 </script>
 
 <style lang="stylus" scoped>
-  
   .albums
     padding-bottom 12px
     box-sizing border-box
-    border-default-1px()
+    border-bottom $border-default-1
     .container
       container-padding()
       .list
@@ -96,7 +75,5 @@ export default {
 </style>
 
 <style>
-.cube-scroll-content{
-  display: inline-block
-}
+.albums .list .cube-scroll-content {display: inline-block}
 </style>

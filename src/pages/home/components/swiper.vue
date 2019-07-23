@@ -1,8 +1,8 @@
 <template>
   <div class="swiper">
-    <cube-slide ref="slide" :data="banners" @change="changePage" :showDots="false">
+    <cube-slide ref="slide" :data="data" @change="changePage" :showDots="false">
       <cube-slide-item
-        v-for="item in banners"
+        v-for="item in data"
         :key="item.targetId"
         class="swiper-item"
       >
@@ -10,13 +10,18 @@
       </cube-slide-item>
   </cube-slide>
   <div class="my-dots">
-    <span class="dots-item" :class="{active: currentIndex === index}" v-for="(item, index) in banners.length" :key="index"></span>
+    <span class="dots-item" :class="{active: currentIndex === index}" v-for="(item, index) in data.length" :key="index"></span>
   </div>
   </div>
 </template>
 
 <script>
 export default {
+  props: {
+    data: {
+      type: Array
+    }
+  },
   data() {
     return {
       banners:[],
@@ -26,18 +31,7 @@ export default {
   methods: {
     changePage(current) {
       this.currentIndex = current
-    },
-    async _getBanner () {
-      const {banners} = await this.$api.home.apiBanner()
-      banners.map(item => {
-        if(item.targetId) {
-          this.banners.push(item)
-        }
-      })
     }
-  },
-  created() {
-    this._getBanner()
   }
 };
 </script>
