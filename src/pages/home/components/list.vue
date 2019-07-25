@@ -63,7 +63,9 @@ export default {
       this.albums = items
     },
     async _getPlayList () {
-      const {result} = await this.$api.home.apiPlaylist()
+      const {result} = await this.$api.home.apiPlaylist({
+        limit: 5
+      })
       this.playList = result
     },
     async _getNewSongs () {

@@ -23,8 +23,8 @@ import myList from './components/albumList'
 export default {
   data () {
     return {
-      title: 'Home',
-      id: 0
+      title: 'PlayList',
+      id: null
     }
   },
   components: {
@@ -41,14 +41,7 @@ export default {
   methods: {
     goBack () {
       this.$router.go(-1)
-    },
-    init () {
-      this.title = this.$route.params.name
-      this.id = this.$route.params.id
     }
-  },
-  created () {
-    this.init()
   }
 }
 </script>

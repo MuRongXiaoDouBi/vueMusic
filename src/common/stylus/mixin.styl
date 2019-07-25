@@ -8,8 +8,14 @@ bg-image($url)
 no-wrap()
   text-overflow: ellipsis
   overflow: hidden
+  word-wrap normal
   white-space: nowrap
-
+// 多行不换行
+no-line-wrap($line)
+  overflow hidden
+  display: -webkit-box;
+  -webkit-line-clamp: $line;
+  -webkit-box-orient: vertical;
 // 扩展点击区域
 extend-click()
   position: relative

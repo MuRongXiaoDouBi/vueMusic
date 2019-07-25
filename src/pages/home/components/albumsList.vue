@@ -9,11 +9,12 @@
         :data="data"
         direction="horizontal"
         nest-mode="native"
-        class="list">
-        <div class="list-wrapper">
-          <div class="item" v-for="item in data" :key="item.id" @click="goList(item.id, item.name)">
+        class="list"
+      >
+        <div class="list-wrapper" >
+          <div class="item" v-for="item in data" :key="item.id">
             <img v-lazy="item.imgUrl" alt="" class="img">
-            <span class="title">{{item.name}}</span>
+            <span class="title" @click="goList(item.id, item.name)">{{item.name}}</span>
             <span class="desc">{{item.artists}}</span>
           </div>
         </div>
@@ -34,12 +35,11 @@ export default {
     listTitle
   },
   methods: {
-    goList(id, name) {
+    goList(id) {
       this.$router.push({
         name: 'Albumlist',
         params: {
-          id,
-          name
+          id
         }
       })
     }

@@ -40,19 +40,24 @@ export default {
 }
 .view {
   position: absolute;
-  left: 0;
-  top: 0;
-  transition: all 0.3s ease; 
+  width:100%;
+  transition: all 0.3s ease;
 }
 .slide-left-enter,
 .slide-right-leave-active {
   opacity: 0;
-  transform: translate(100px, 0);
+  transform: translate(50px, 0);
 }
 
 .slide-left-leave-active,
 .slide-right-enter {
   opacity: 0;
-  transform: translate(-100px, 0);
-}    
+  transform: translate(-50px, 0);
+}
+/* .slide-enter-active, .slide-leave-active {
+  transition: opacity .5s;
+}
+.slide-enter, .slide-leave-to  {
+  transform: translate3d(100%, 0, 0);
+} */
 </style>

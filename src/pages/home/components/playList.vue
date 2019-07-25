@@ -4,7 +4,7 @@
       <list-title title="Most Played Tracks">
         <span>See All</span>
       </list-title>
-      <cube-scroll ref="scroll" :data="data" class="list" nest-mode="native">
+      <div class="list">
         <div class="item" v-for="item in data" :key="item.id">
           <img v-lazy="item.picUrl" class="img">
           <div class="main">
@@ -13,7 +13,7 @@
           </div>
           <span class="iconfont icon-xunhuanbofang"></span>
         </div>
-      </cube-scroll>
+      </div>
     </div>
   </div>
 </template>
@@ -41,7 +41,6 @@ export default {
       container-padding()
       .list
         width 100%
-        height 210px
         .item:first-child
           border-top $border-default-1
         .item:last-child

@@ -3,12 +3,16 @@ export class Albums {
     id,
     name,
     imgUrl,
-    artists
+    artists,
+    time,
+    type
   }) {
     this.id = id
     this.name = name
     this.imgUrl = imgUrl
     this.artists = artists
+    this.time = time,
+    this.type = type
   }
 }
 
@@ -18,15 +22,18 @@ export class NewSongs {
     name,
     imgUrl,
     artists,
-    subType
+    subType,
+    time
   }) {
     this.id = id
     this.name = name
     this.imgUrl = imgUrl
     this.artists = artists
-    this.subType = subType
+    this.subType = subType,
+    this.time = time
   }
 }
+
 
 export default {
   Albums,
