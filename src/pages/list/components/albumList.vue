@@ -23,7 +23,7 @@ import loading from 'components/loading/loading'
 import listTitle from 'components/listTitle/listTitle'
 import listView from 'components/listView/listView'
 import info from './info'
-import {NewSongs} from 'common/js/class'
+import {songsList} from 'common/js/class'
 import {initArtists, dateFormat, timeFormat, getSongUrl} from 'common/js/utils'
 import {mapActions} from 'vuex'
 export default {
@@ -51,12 +51,13 @@ export default {
       let songId = []
       songs.map(item => {
         songId.push(item.id)
-        songList.push(new NewSongs({
+        songList.push(new songsList({
           id: item.id,
           name: item.name,
           artists: initArtists(item.ar),
           imgUrl: item.al.picUrl,
-          time: timeFormat(item.dt)
+          time: timeFormat(item.dt),
+          dt: item.dt
         }))
       })
       const songsUrl = await getSongUrl(songId)

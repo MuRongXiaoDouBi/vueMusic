@@ -21,7 +21,7 @@
         <div class="middle">
           <div class="middl-l">
             <div class="cd-wrapper" ref="cdWrapper">
-              <div class="cd">
+              <div class="cd" :class="cdCss">
                 <img v-lazy="currentSong.imgUrl" alt="">
               </div>
             </div>
@@ -29,49 +29,49 @@
         </div>
         <div class="bottom">
           <div class="progress-wrapper">
-            <span class="time time-l">0:01</span>
+            <span class="time time-l">{{songTimeFormat(currentTime)}}</span>
             <div class="progress-bar-wrapper">
-              <div class="progress-bar">
-                <div class="bar-inner">
-                  <div class="progress"></div>
-                  <div class="progress-btn-wrapper">
-                    <div class="progress-btn"></div>
-                  </div>
-                </div>
-              </div>
+              <progress-bar :percent="percent" @percentChange="percentChange"></progress-bar>
             </div>
-            <span class="time time-r">0:01</span>
+            <span class="time time-r">{{currentSong.time}}</span>
           </div>
           <div class="operators">
             <i class="iconfont icon icon-suijibofang"></i>
-            <i class="iconfont icon icon-shangyigeshangyiqu"></i>
-            <i class="iconfont icon play icon-bofang"></i>
-            <i class="iconfont icon icon-xiayigexiayiqu"></i>
+            <i class="iconfont icon icon-shangyigeshangyiqu" :class="disableClass" @click="prev"></i>
+            <i class="iconfont icon play" :class="plaIcon" @click="togglePlaying"></i>
+            <i class="iconfont icon icon-xiayigexiayiqu" @click="next" :class="disableClass"></i>
             <i class="iconfont icon icon-icon-"></i>
           </div>
         </div>
         <div class="bgimg">
-          <img :src="currentSong.imgUrl" alt="">
+          <img :src="currentSong.imgUrl">
         </div>
       </div>
     </transition>
     <transition name="mini">
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
-          <img v-lazy="currentSong.imgUrl" class="play">
+          <img v-lazy="currentSong.imgUrl" :class="cdCss" class="play">
         </div>
         <div class="text">
           <h1 class="name" v-html="currentSong.name"></h1>
           <div class="desc" v-html="currentSong.artists"></div>
         </div>
         <div class="control">
-          <i class="iconfont icon-bofang"></i>
+          <i class="iconfont" :class="plaIcon" @click.stop="togglePlaying"></i>
         </div>
         <div class="control">
           <i class="iconfont icon-gengduo" style="font-size: 20px"></i>
         </div>
       </div>
     </transition>
+    <audio 
+      ref="audio" 
+      :src="currentSong.songUrl" 
+      @canplay="ready" 
+      @error="error"
+      @timeupdate="updateTime"
+    ></audio>
   </div>
 </template>
 
@@ -80,19 +80,115 @@ import myHeader from '../header/header'
 import {mapGetters, mapMutations} from 'vuex'
 import animations from 'create-keyframe-animation'
 import {prefixStyle} from 'common/js/dom'
+import progressBar from '../progress/progress'
 const transform = prefixStyle('transform')
 export default {
+  data() {
+    return {
+      songReady: false,
+      currentTime: 0
+    } 
+  },
   components: {
-    myHeader
+    myHeader,
+    progressBar
   },
   computed: {
+    plaIcon () {
+      return this.playing ? 'icon-suspend_icon' : 'icon-bofang'
+    },
+    cdCss () {
+      return this.playing ? 'play' : 'play pause'
+    },
+    disableClass() {
+      return this.songReady ? '' : 'disable'
+    },
+    percent() {
+      return this.currentTime / this.currentSong.dt
+    },
     ...mapGetters([
       'fullScreen',
       'playlist',
-      'currentSong'
+      'currentSong',
+      'playing',
+      'currentIndex'
     ])
   },
+  watch: {
+    currentSong() {
+      this.$nextTick(() => {
+        this.$refs.audio.play()
+      })
+    },
+    playing (newPlay) {
+      const audio = this.$refs.audio
+      this.$nextTick(() => {
+        newPlay ? audio.play() : audio.pause()
+      })
+    }
+  },
   methods: {
+    percentChange(percent) {
+      this.$refs.audio.currentTime = (this.currentSong.dt * percent) / 1000
+      if(!this.playing) {
+        this.togglePlaying()
+      }
+    },
+    updateTime(e) {
+      const time = e.target.currentTime
+      this.currentTime = time
+    },
+    songTimeFormat(time){
+      time = time | 0
+      const min = this.pad(time / 60 | 0)
+      const second = this.pad(time % 60)
+      return `${min}:${second}`
+    },
+    pad (num, n = 2) {
+      let len = num.toString().length
+      while(len < n) {
+        num = '0' + num
+        len++
+      }
+      return num
+    },
+    ready () {
+      this.songReady = true
+    },
+    error () {
+      this.songReady = true
+    },
+    next () {
+      if (!this.songReady) {
+        return
+      }
+      let index = this.currentIndex + 1
+      if (index === this.playlist.length) {
+        index = 0
+      }
+      this.setCurrentIndex(index)
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+      this.songReady = false
+    },
+    prev () {
+      if (!this.songReady) {
+        return
+      }
+      let index = this.currentIndex - 1
+      if (index === -1) {
+        index = this.playlist.length - 1
+      }
+      this.setCurrentIndex(index)
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+      this.songReady = false
+    },
+    togglePlaying () {
+      this.setPlayingState(!this.playing)
+    },
     back() {
       this.setFullScreen(false)
     },
@@ -150,7 +246,9 @@ export default {
       return {x, y, scale}
     },
     ...mapMutations({
-      setFullScreen: 'SET_FULL_SCREEN'
+      setFullScreen: 'SET_FULL_SCREEN',
+      setPlayingState: 'SET_PLAYING_STATE',
+      setCurrentIndex: 'SET_CURRENT_INDEX'
     })
   }
 }
@@ -187,6 +285,10 @@ export default {
         .play
           border-radius 50%
           width 100%
+          &.play
+            animation rotate 20s linear infinite
+          &.pause
+            animation-play-state paused
       .text
         display flex
         flex-direction column
@@ -226,6 +328,8 @@ export default {
         display flex
         align-items center
         font-weight 800
+        &.disable
+          color: $color-theme-d
       .ar
         width 100%
         position absolute
@@ -258,6 +362,11 @@ export default {
               box-sizing: border-box
               border: 15px solid hsla(0,0%,100%,.1)
               border-radius: 50%
+              box-shadow:0 0 50px rgba(255, 255, 255, 0.3);
+              &.play
+                animation rotate 20s linear infinite
+              &.pause
+                animation-play-state paused
               img 
                 position: absolute
                 left: 0
@@ -293,38 +402,12 @@ export default {
             width 30px
           .time-l
             text-align left 
+            padding-right 10px
           .time-r
             text-align right 
+            padding-left 10px
           .progress-bar-wrapper
             flex 1
-            .progress-bar
-              height 30px
-              .bar-inner
-                position relative
-                top 13px
-                height 4px
-                background rgba(0, 0, 0, .3)
-                .progress
-                  position absolute
-                  height 100%
-                  background $color-theme
-                  width 50%
-                .progress-btn-wrapper
-                  position absolute
-                  left -8px
-                  top -13px
-                  width 30px
-                  height 30px
-                  .progress-btn
-                    position: relative
-                    top: 7px
-                    left: 7px
-                    box-sizing: border-box
-                    width: 16px
-                    height: 16px
-                    border: 5px solid #f1f1f1
-                    border-radius: 50%
-                    background: $color-theme
       .bgimg
         position: absolute
         left: -50%
@@ -334,4 +417,9 @@ export default {
         z-index: -1
         opacity: .6
         filter: blur(30px)
+  @keyframes rotate 
+    0%
+      transform rotate(0)
+    100%
+      transform rotate(360deg)
 </style>
