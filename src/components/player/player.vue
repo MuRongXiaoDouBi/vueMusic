@@ -36,7 +36,7 @@
             <span class="time time-r">{{currentSong.time}}</span>
           </div>
           <div class="operators">
-            <i class="iconfont icon icon-suijibofang"></i>
+            <span class="mode" v-text="modePlay" @click="changeMode"></span>
             <i class="iconfont icon icon-shangyigeshangyiqu" :class="disableClass" @click="prev"></i>
             <i class="iconfont icon play" :class="plaIcon" @click="togglePlaying"></i>
             <i class="iconfont icon icon-xiayigexiayiqu" @click="next" :class="disableClass"></i>
@@ -71,6 +71,7 @@
       @canplay="ready" 
       @error="error"
       @timeupdate="updateTime"
+      @ended="end"
     ></audio>
   </div>
 </template>
@@ -81,6 +82,8 @@ import {mapGetters, mapMutations} from 'vuex'
 import animations from 'create-keyframe-animation'
 import {prefixStyle} from 'common/js/dom'
 import progressBar from '../progress/progress'
+import {playMode} from 'common/js/config'
+import {shuffle} from 'common/js/utils'
 const transform = prefixStyle('transform')
 export default {
   data() {
@@ -106,16 +109,24 @@ export default {
     percent() {
       return this.currentTime / this.currentSong.dt
     },
+    modePlay() {
+      return this.mode === playMode.sequence ? '列' : this.mode === playMode.loop ? '单' : '随'
+    },
     ...mapGetters([
       'fullScreen',
       'playlist',
       'currentSong',
       'playing',
-      'currentIndex'
+      'currentIndex',
+      'mode',
+      'sequenceList'
     ])
   },
   watch: {
-    currentSong() {
+    currentSong(newSong, oldSong) {
+      if(newSong === oldSong) {
+        return
+      }
       this.$nextTick(() => {
         this.$refs.audio.play()
       })
@@ -128,6 +139,24 @@ export default {
     }
   },
   methods: {
+    changeMode() {
+      const mode = (this.mode + 1) % 3
+      this.setPlayMode(mode)
+      let list = null
+      if (mode === playMode.random) {
+        list = shuffle(this.sequenceList)
+      } else {
+        list = this.sequenceList
+      }
+      this.resetCurrentIndex(list)
+      this.setPlayList(list)
+    },
+    resetCurrentIndex(list){
+      let index = list.findIndex((item) => {
+        return item.id === this.currentSong.id
+      })
+      this.setCurrentIndex(index)
+    },
     percentChange(percent) {
       this.$refs.audio.currentTime = (this.currentSong.dt * percent) / 1000
       if(!this.playing) {
@@ -157,6 +186,17 @@ export default {
     },
     error () {
       this.songReady = true
+    },
+    end() {
+      if(this.mode === playMode.loop) {
+        this.loop()
+      } else {
+        this.next()
+      }
+    },
+    loop() {
+      this.$refs.audio.currentTime = 0
+      this.$refs.audio.play()
     },
     next () {
       if (!this.songReady) {
@@ -248,7 +288,9 @@ export default {
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
       setPlayingState: 'SET_PLAYING_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX'
+      setCurrentIndex: 'SET_CURRENT_INDEX',
+      setPlayMode: 'SET_PLAY_MODE',
+      setPlayList: 'SET_PLAYLIST'
     })
   }
 }
@@ -322,6 +364,17 @@ export default {
       height 100%
       width 100%
       background: $color-background
+      .mode
+        display flex
+        align-items center
+        justify-content center
+        box-sizing border-box
+        font-size $font-size-small-s
+        color $color-theme
+        border-radius 50%
+        width 25px
+        height 25px
+        border 2px solid $color-theme
       .icon
         font-size 30px
         color $color-theme
@@ -417,6 +470,9 @@ export default {
         z-index: -1
         opacity: .6
         filter: blur(30px)
+        img
+          width 100%
+          height 100%
   @keyframes rotate 
     0%
       transform rotate(0)

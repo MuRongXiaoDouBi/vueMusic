@@ -4,12 +4,12 @@
       ref="scroll2"
       :data="songs"
       class="scroll-list-inner-wrap"
-      v-if="Object.keys(album).length"
+      v-if="songs.length"
     >
       <info :info="album"></info>
       <div class="list">
         <list-title title="Tracklist">
-          <span>Shuffle</span>
+          <span @click="random">Shuffle</span>
         </list-title>
         <list-view :list="songs" @select="selectItem"></list-view>
       </div>
@@ -43,6 +43,11 @@ export default {
     listView
   },
   methods: {
+    random() {
+      this.randomPlay({
+        list: this.songs
+      })
+    },
     async _getAlbumList (id) {
       const {songs, album} = await this.$api.list.apiAlbum({
         id
@@ -87,7 +92,8 @@ export default {
       })
     },
     ...mapActions([
-      'selectPlay'
+      'selectPlay',
+      'randomPlay'
     ])
   },
   mounted () {
