@@ -1,12 +1,5 @@
 export class Albums {
-  constructor({
-    id,
-    name,
-    imgUrl,
-    artists,
-    time,
-    type
-  }) {
+  constructor({id, name, imgUrl, artists, time, type}) {
     this.id = id
     this.name = name
     this.imgUrl = imgUrl
@@ -17,25 +10,14 @@ export class Albums {
 }
 
 export class NewSongs {
-  constructor({
-    id,
-    name,
-    imgUrl,
-    artists,
-    subType,
-    time
-  }) {
+  constructor({id, name, imgUrl, artists, subType, time, songUrl}) 
+  {
     this.id = id
     this.name = name
     this.imgUrl = imgUrl
     this.artists = artists
     this.subType = subType,
     this.time = time
+    this.songUrl = songUrl
   }
-}
-
-
-export default {
-  Albums,
-  NewSongs
 }

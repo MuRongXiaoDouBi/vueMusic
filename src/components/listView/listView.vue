@@ -1,6 +1,6 @@
 <template>
   <div class="list-view">
-    <div class="item" v-for="(item, index) in list" :key="item.id">
+    <div class="item" v-for="(item, index) in list" :key="item.id" @click="selectItem(item, index)">
       <div class="number">{{index + 1}}</div>
       <img v-lazy="item.imgUrl" class="img" v-if="item.imgUrl">
       <div class="main">
@@ -17,6 +17,11 @@
 export default {
   props: {
     list: Array
+  },
+  methods: {
+    selectItem (item, index) {
+      this.$emit('select', item, index)
+    }
   }
 }
 </script>

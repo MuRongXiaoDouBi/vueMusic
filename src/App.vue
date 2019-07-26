@@ -5,11 +5,13 @@
         <router-view class="view" />
       </transition>
     </keep-alive>
+  <player></player>
   </div>
 </template>
 
 <script>
-import { watch } from "fs";
+import player from 'components/player/player'
+// import {mapGetter} from 'vuex'
 export default {
   name: "app",
   data() {
@@ -17,6 +19,9 @@ export default {
       exclude: ["Albumlist"],
       transition: "slide-left"
     };
+  },
+  components: {
+    player
   },
   watch: {
     $route(to, from) {

@@ -1,5 +1,5 @@
 import moment from 'moment'
-
+import api from 'api/api'
 export function initArtists (list) {
   if (typeof list !== 'object'){
     return list
@@ -18,8 +18,10 @@ export function timeFormat (time) {
   return moment(time).format('mm:ss')
 }
 
-export default {
-  initArtists,
-  dateFormat,
-  timeFormat
+export async function  getSongUrl (id) {
+  const ids = id.join(',')
+  const {data} = await api.list.apiSongUrl({
+    id: ids
+  })
+  return data
 }

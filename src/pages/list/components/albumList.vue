@@ -7,7 +7,12 @@
       v-if="Object.keys(album).length"
     >
       <info :info="album"></info>
-      <list :list="songs"></list>
+      <div class="list">
+        <list-title title="Tracklist">
+          <span>Shuffle</span>
+        </list-title>
+        <list-view :list="songs" @select="selectItem"></list-view>
+      </div>
     </cube-scroll>
     <loading v-else></loading>
  </div>
@@ -15,10 +20,12 @@
 
 <script>
 import loading from 'components/loading/loading'
-import list from './list'
+import listTitle from 'components/listTitle/listTitle'
+import listView from 'components/listView/listView'
 import info from './info'
 import {NewSongs} from 'common/js/class'
-import {initArtists, dateFormat, timeFormat} from 'common/js/utils'
+import {initArtists, dateFormat, timeFormat, getSongUrl} from 'common/js/utils'
+import {mapActions} from 'vuex'
 export default {
   data () {
     return {
@@ -32,7 +39,8 @@ export default {
   components: {
     loading,
     info,
-    list
+    listTitle,
+    listView
   },
   methods: {
     async _getAlbumList (id) {
@@ -40,7 +48,9 @@ export default {
         id
       })
       let songList = []
+      let songId = []
       songs.map(item => {
+        songId.push(item.id)
         songList.push(new NewSongs({
           id: item.id,
           name: item.name,
@@ -48,6 +58,14 @@ export default {
           imgUrl: item.al.picUrl,
           time: timeFormat(item.dt)
         }))
+      })
+      const songsUrl = await getSongUrl(songId)
+      songList.map((item, index) => {
+        songsUrl.map(i => {
+          if (item.id === i.id) {
+            songList[index].songUrl = i.url
+          }
+        })
       })
       this.songs = songList
       let albumList = {
@@ -60,7 +78,16 @@ export default {
           time: dateFormat(album.publishTime)
       }
       this.album = albumList
-    }
+    },
+    selectItem (item, index) {
+      this.selectPlay({
+        list: this.songs,
+        index
+      })
+    },
+    ...mapActions([
+      'selectPlay'
+    ])
   },
   mounted () {
     this.albumId = this.$route.params.id
@@ -75,4 +102,6 @@ export default {
   bottom 0
   width 100%
   height calc(100% - 80px)
+  .list
+    container-padding()
 </style>
