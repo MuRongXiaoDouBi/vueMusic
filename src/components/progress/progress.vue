@@ -103,7 +103,7 @@ export default {
       .progress-btn
         position: relative
         top: 7px
-        left: 7px
+        left: 0px
         box-sizing: border-box
         width: 16px
         height: 16px

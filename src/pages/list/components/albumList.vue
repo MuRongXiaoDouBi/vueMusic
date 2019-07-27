@@ -1,7 +1,7 @@
 <template>
  <div class="wrapper">
     <cube-scroll
-      ref="scroll2"
+      ref="list"
       :data="songs"
       class="scroll-list-inner-wrap"
       v-if="songs.length"
@@ -26,7 +26,9 @@ import info from './info'
 import {songsList} from 'common/js/class'
 import {initArtists, dateFormat, timeFormat, getSongUrl} from 'common/js/utils'
 import {mapActions} from 'vuex'
+import {playListMixin} from 'common/js/mixin'
 export default {
+  mixins:[playListMixin],
   data () {
     return {
       songs: [],
@@ -91,6 +93,18 @@ export default {
         index
       })
     },
+    handlePlayList(list) {
+      const bottom = list.length > 0 ? 60 : ''
+      bottom = bottom + 50
+      setTimeout(() => {
+        // const refList = this.$refs.list
+        // refList.$el.style.height = `calc(100% - ${bottom}px)`
+        // console.log(refList.$el.style)
+        // refList.refresh()
+      }, 500)
+      // this.$refs.list.$el.style.bottom = bottom
+      // 
+    },
     ...mapActions([
       'selectPlay',
       'randomPlay'
@@ -106,9 +120,8 @@ export default {
 .scroll-list-inner-wrap
   position fixed
   top 50px
-  bottom 0
   width 100%
-  height calc(100% - 80px)
+  height calc(100% - 50px)
   .list
     container-padding()
 </style>

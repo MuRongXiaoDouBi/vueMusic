@@ -18,14 +18,33 @@
           </my-header>
           <div class="ar" v-html="currentSong.artists"></div>
         </div>
-        <div class="middle">
-          <div class="middl-l">
-            <div class="cd-wrapper" ref="cdWrapper">
-              <div class="cd" :class="cdCss">
-                <img v-lazy="currentSong.imgUrl" alt="">
+        <div class="middle" @click="changeMiddle">
+          <transition name="middleL">
+            <div class="middl-l" v-show="currentShow === 'cd'">
+              <div class="cd-wrapper" ref="cdWrapper">
+                <div class="cd" :class="cdCss">
+                  <img v-lazy="currentSong.imgUrl" alt="">
+                </div>
+              </div>
+              <div class="playing-lyric-wrapper">
+                <div class="playing-lyric">{{playingLyric}}</div>
               </div>
             </div>
-          </div>
+          </transition>
+          <transition name="middleR" >
+            <cube-scroll class="middle-r" ref="lyricList" v-show="currentShow === 'lyric'" :data="currentLyric && currentLyric.lines">
+              <div class="lyric-wrapper">
+                <div v-if="currentLyric">
+                  <p ref="lyricLine"
+                    class="text"
+                    :class="{'current': currentLineNum === index}"
+                    v-for="(line,index) in currentLyric.lines"
+                    :key="index"
+                    >{{line.txt}}</p>
+                </div>
+              </div>
+            </cube-scroll>
+          </transition>
         </div>
         <div class="bottom">
           <div class="progress-wrapper">
@@ -80,6 +99,7 @@
 import myHeader from '../header/header'
 import {mapGetters, mapMutations} from 'vuex'
 import animations from 'create-keyframe-animation'
+import Lyric from 'lyric-parser'
 import {prefixStyle} from 'common/js/dom'
 import progressBar from '../progress/progress'
 import {playMode} from 'common/js/config'
@@ -89,7 +109,11 @@ export default {
   data() {
     return {
       songReady: false,
-      currentTime: 0
+      currentTime: 0,
+      currentLyric: null,
+      currentLineNum: 0,
+      currentShow: 'cd',
+      playingLyric: ''
     } 
   },
   components: {
@@ -127,9 +151,13 @@ export default {
       if(newSong === oldSong) {
         return
       }
-      this.$nextTick(() => {
+      if(this.currentLyric) {
+        this.currentLyric.stop()
+      }
+      setTimeout(() => {
         this.$refs.audio.play()
-      })
+        this.getLyric()
+      }, 1000)
     },
     playing (newPlay) {
       const audio = this.$refs.audio
@@ -139,6 +167,35 @@ export default {
     }
   },
   methods: {
+    changeMiddle () {
+      if (this.currentShow === 'cd') {
+        this.currentShow = 'lyric'
+      } else {
+        this.currentShow = 'cd'
+      }
+      // console.log(this.currentShow)
+    },
+    async getLyric() {
+      const data = await this.currentSong.getLyric()
+      if (this.currentSong.lyric !== data) {
+        return
+      }
+      let lyric = new Lyric(data, this.hanlderLyric)
+      this.currentLyric = lyric
+      if (this.playing) {
+        this.currentLyric.play()
+      }
+    },
+    hanlderLyric({lineNum, txt}){
+      this.currentLineNum = lineNum
+      if (lineNum > 5) {
+          let lineEl = this.$refs.lyricLine[lineNum - 5]
+          this.$refs.lyricList.scrollToElement(lineEl, 1000)
+        } else {
+          this.$refs.lyricList.scrollTo(0, 0, 1000)
+        }
+      this.playingLyric = txt
+    },
     changeMode() {
       const mode = (this.mode + 1) % 3
       this.setPlayMode(mode)
@@ -158,9 +215,13 @@ export default {
       this.setCurrentIndex(index)
     },
     percentChange(percent) {
-      this.$refs.audio.currentTime = (this.currentSong.dt * percent) / 1000
+      let currentTime =  this.currentSong.dt * percent
+      this.$refs.audio.currentTime = currentTime / 1000
       if(!this.playing) {
         this.togglePlaying()
+      }
+      if(this.currentLyric) {
+        this.currentLyric.seek(currentTime)
       }
     },
     updateTime(e) {
@@ -197,18 +258,25 @@ export default {
     loop() {
       this.$refs.audio.currentTime = 0
       this.$refs.audio.play()
+      if(this.currentLyric) {
+        this.currentLyric.seek()
+      }
     },
     next () {
       if (!this.songReady) {
         return
       }
-      let index = this.currentIndex + 1
-      if (index === this.playlist.length) {
-        index = 0
-      }
-      this.setCurrentIndex(index)
-      if (!this.playing) {
-        this.togglePlaying()
+      if(this.playlist.length === 1) {
+        this.loop()
+      }else {
+        let index = this.currentIndex + 1
+        if (index === this.playlist.length) {
+          index = 0
+        }
+        this.setCurrentIndex(index)
+        if (!this.playing) {
+          this.togglePlaying()
+        }
       }
       this.songReady = false
     },
@@ -216,18 +284,28 @@ export default {
       if (!this.songReady) {
         return
       }
-      let index = this.currentIndex - 1
-      if (index === -1) {
-        index = this.playlist.length - 1
-      }
-      this.setCurrentIndex(index)
-      if (!this.playing) {
-        this.togglePlaying()
-      }
+      if(this.playlist.length === 1) {
+        this.loop()
+      } else {
+        let index = this.currentIndex - 1
+        if (index === -1) {
+          index = this.playlist.length - 1
+        }
+        this.setCurrentIndex(index)
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+      } 
       this.songReady = false
     },
     togglePlaying () {
+      if(!this.songReady) {
+        return
+      }
       this.setPlayingState(!this.playing)
+      if(this.currentLyric){
+        this.currentLyric.togglePlay()
+      }
     },
     back() {
       this.setFullScreen(false)
@@ -389,11 +467,10 @@ export default {
         top 50px
         text-align center
       .middle
-        display: flex
-        align-items: center
-        position: absolute
+        position: fixed
         width: 100%
-        top: 100px
+        top: 80px
+        bottom: 170px
         white-space: nowrap
         font-size: 0
         .middl-l
@@ -403,6 +480,10 @@ export default {
           width: 100%
           height: 0
           padding-top: 80%
+          &.middleL-enter-active, &.middleL-leave-active
+            transition: all 0.3s
+          &.middleL-enter, &.middleL-leave-to
+            opacity: 0
           .cd-wrapper
             position: absolute
             left: 10%
@@ -427,6 +508,37 @@ export default {
                 width: 100%
                 height: 100%
                 border-radius: 50%
+          .playing-lyric-wrapper
+            width: 80%
+            margin: 30px auto 0 auto
+            overflow: hidden
+            text-align: center
+            .playing-lyric
+              height: 20px
+              line-height: 20px
+              font-size: $font-size-medium
+              color: $color-text-l
+        .middle-r
+          display: inline-block
+          vertical-align: top
+          width: 100%
+          height: 100%
+          overflow: hidden
+          &.middleR-enter-active, &.middleR-leave-active
+            transition: all 0.2s;
+          &.middleR-enter, &.middleR-leave-to
+            opacity: 0
+          .lyric-wrapper
+            width: 80%
+            margin: 0 auto
+            overflow: hidden
+            text-align: center
+            .text
+              line-height: 32px
+              color: $color-text-l
+              font-size: $font-size-medium
+              &.current
+                color: $color-text
       .bottom
         position: absolute
         bottom: 50px
