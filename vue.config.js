@@ -6,6 +6,8 @@ function resolve(dir) {
 
 
 module.exports = {
+  assetsDir: 'static',
+  publicPath: '/music/',
   chainWebpack: config => {
     config.resolve.alias
       .set('@', resolve('src'))
@@ -38,6 +40,17 @@ module.exports = {
     'cube-ui': {
       postCompile: true,
       theme: true
+    }
+  },
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080/',   //代理接口
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ' http://123.207.138.75:4000'    //代理的路径
+        }
+      }
     }
   }
 }

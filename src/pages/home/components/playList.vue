@@ -57,15 +57,15 @@ export default {
             height 40px
             border-radius 4px
           .main
-            width 200px
+            width 65%
             .title
-              width 200px
+              width 100%
               color $color-text
               font-size $font-size-small
               margin-bottom 8px
               no-wrap()
             .desc
-              width 200px
+              width 100%
               color $color-text-d
               font-size $font-size-small-s
               no-wrap()

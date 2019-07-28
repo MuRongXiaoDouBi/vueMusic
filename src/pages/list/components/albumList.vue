@@ -38,6 +38,14 @@ export default {
     }
   },
   watch: {
+    '$route' (to, from) {
+      if(to.params.id != from.params.id){
+        this.albumId = this.$route.params.id
+        if(to.params.id) {
+          this.init()
+        }
+		  }
+    }
   },
   components: {
     loading,
@@ -102,14 +110,21 @@ export default {
         this.$refs.scroll.refresh()
       }, 500)
     },
+    init() {
+      
+      this._getAlbumList(this.albumId)
+    },
+
     ...mapActions([
       'selectPlay',
       'randomPlay'
     ])
   },
-  mounted () {
-    this.albumId = this.$route.params.id
-    this._getAlbumList(this.albumId)
+  created () {
+    if(this.$route.params) {
+      this.albumId = this.$route.params.id
+      this.init()
+    }
   }
 }
 </script>

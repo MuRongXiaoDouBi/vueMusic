@@ -32,11 +32,6 @@ export default {
     myList
   },
   watch: {
-    '$route' (to, from) {
-      if(to !== from){
-        this.init()
-      }
-    }
   },
   methods: {
     goBack () {
