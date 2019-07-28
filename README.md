@@ -1,4 +1,4 @@
-# 基于vue2.5开发的音乐WebApp(开发中)
+# 基于vue2.5开发的音乐WebApp
 
 ## :blue_book: 技术栈和主要框架
 
@@ -27,6 +27,17 @@ npm run build
 ### 首页
 
 ![首页](./static/images/首页.gif "首页")
+![播放器](./static/images/player.gif "播放器")
+
+### 待完成
+
+1. ~~播放器~~
+2. ~~歌词滚动~~
+3. 正在播放列表
+4. 搜索功能
+5. 歌手列表
+6. 查看全部列表
+7. 收藏功能
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
