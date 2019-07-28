@@ -8,20 +8,19 @@
         <div class="ar">{{item.artists}}</div>
       </div>
       <div class="time">{{item.time}}</div>
-      <div class="play iconfont icon-bofang"></div>
+      <div class="play iconfont" :class="item.id === songId && playing ? 'icon-suspend_icon' : 'icon-bofang'"></div>
     </div>
   </div>
 </template>
 
 <script>
+import {mapGetters, mapMutations} from 'vuex'
+import {playListPlay} from 'common/js/mixin'
+
 export default {
+  mixins:[playListPlay],
   props: {
     list: Array
-  },
-  methods: {
-    selectItem (item, index) {
-      this.$emit('select', item, index)
-    }
   }
 }
 </script>

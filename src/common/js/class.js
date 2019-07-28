@@ -10,7 +10,7 @@ export class Albums {
   }
 }
 
-export class songsList {
+export class SongsList {
   constructor({id, name, imgUrl, artists, subType, time, songUrl, dt}) 
   {
     this.id = id

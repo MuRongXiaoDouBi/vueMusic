@@ -1,10 +1,12 @@
 <template>
   <div id="app">
-    <keep-alive :exclude="exclude">
-      <transition :name="transition">
-        <router-view class="view" />
-      </transition>
-    </keep-alive>
+  
+    <transition :name="transition">
+      <keep-alive>
+      <router-view class="view" />
+      </keep-alive>
+    </transition>
+    
   <player></player>
   </div>
 </template>

@@ -1,16 +1,17 @@
 <template>
  <div class="wrapper">
+   <div class="list-wrapper" v-if="popularList.length" ref="list">
     <cube-scroll
-      ref="scroll2"
+      ref="scroll"
       :data="playList"
       class="scroll-list-inner-wrap"
-      v-if="popularList.length"
     >
       <swiper :data="banners"></swiper>
       <albums-list :data="albums"/>
       <play-list :data="playList"/>
-      <pop-list :data="popularList" />
+      <pop-list @select="selectItem" :data="popularList" />
     </cube-scroll>
+   </div>
     <loading v-else></loading>
  </div>
 </template>
@@ -21,10 +22,13 @@ import playList from './playList'
 import swiper from './swiper'
 import popList from './popularList'
 import loading from 'components/loading/loading'
-import {initArtists} from 'common/js/utils'
-import {Albums, NewSongs} from 'common/js/class'
+import {initArtists, timeFormat, getSongUrl} from 'common/js/utils'
+import {Albums, SongsList} from 'common/js/class'
+import {playListMixin} from 'common/js/mixin'
+import { mapActions } from 'vuex';
 
 export default {
+  mixins:[playListMixin],
   data () {
     return {
       banners: [],
@@ -71,17 +75,46 @@ export default {
     async _getNewSongs () {
       const {result} = await this.$api.home.apiNewSongs()
       let items = []
+      let songId = []
       result.map(item => {
-        items.push(new NewSongs({
-          id: item.song.id,
-          name: item.song.name,
-          imgUrl: item.song.album.picUrl,
+        songId.push(item.id)
+        items.push(new SongsList({
+          id: item.id,
+          name: item.name,
           artists: initArtists(item.song.artists),
-          subType: item.song.album.subType
+          imgUrl: item.song.album.picUrl,
+          subType: item.song.album.subType,
+          time: timeFormat(item.song.duration),
+          dt: item.song.duration
         }))
       })
+      const songsUrl = await getSongUrl(songId)
+      items.map((item, index) => {
+        songsUrl.map(i => {
+          if (item.id === i.id) {
+            items[index].songUrl = i.url
+          }
+        })
+      })
       this.popularList = items
-    }
+    },
+    handlePlayList(list) {
+      let bottom = list.length > 0 ? 75 : ''
+      setTimeout(() => {
+        const refList = this.$refs.list
+        refList.style.bottom = `${bottom}px`
+        this.$refs.scroll.refresh()
+      }, 500)
+    },
+    selectItem(item, index) {
+      this.selectPlay({
+        list: this.popularList,
+        index
+      })
+    },
+    ...mapActions([
+      'selectPlay'
+    ])
   },
   created () {
     this._getBanner()
@@ -92,10 +125,9 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-.scroll-list-inner-wrap
+.list-wrapper
   position fixed
   top 50px
-  bottom 0
   width 100%
-  height calc(100% - 80px)
+  bottom 0
 </style>

@@ -1,19 +1,20 @@
 <template>
  <div class="wrapper">
-    <cube-scroll
-      ref="list"
-      :data="songs"
-      class="scroll-list-inner-wrap"
-      v-if="songs.length"
-    >
-      <info :info="album"></info>
-      <div class="list">
-        <list-title title="Tracklist">
-          <span @click="random">Shuffle</span>
-        </list-title>
-        <list-view :list="songs" @select="selectItem"></list-view>
-      </div>
-    </cube-scroll>
+   <div class="list-wrapper" v-if="songs.length" ref="list">
+      <cube-scroll
+        ref="scroll"
+        :data="songs"
+        class="scroll-list-inner-wrap"
+      >
+        <info :info="album"></info>
+        <div class="list">
+          <list-title title="Tracklist">
+            <span @click="random">Shuffle</span>
+          </list-title>
+          <list-view :list="songs" @select="selectItem"></list-view>
+        </div>
+      </cube-scroll>
+   </div>
     <loading v-else></loading>
  </div>
 </template>
@@ -23,7 +24,7 @@ import loading from 'components/loading/loading'
 import listTitle from 'components/listTitle/listTitle'
 import listView from 'components/listView/listView'
 import info from './info'
-import {songsList} from 'common/js/class'
+import {SongsList} from 'common/js/class'
 import {initArtists, dateFormat, timeFormat, getSongUrl} from 'common/js/utils'
 import {mapActions} from 'vuex'
 import {playListMixin} from 'common/js/mixin'
@@ -58,7 +59,7 @@ export default {
       let songId = []
       songs.map(item => {
         songId.push(item.id)
-        songList.push(new songsList({
+        songList.push(new SongsList({
           id: item.id,
           name: item.name,
           artists: initArtists(item.ar),
@@ -94,16 +95,12 @@ export default {
       })
     },
     handlePlayList(list) {
-      const bottom = list.length > 0 ? 60 : ''
-      bottom = bottom + 50
+      let bottom = list.length > 0 ? 75 : ''
       setTimeout(() => {
-        // const refList = this.$refs.list
-        // refList.$el.style.height = `calc(100% - ${bottom}px)`
-        // console.log(refList.$el.style)
-        // refList.refresh()
+        const refList = this.$refs.list
+        refList.style.bottom = `${bottom}px`
+        this.$refs.scroll.refresh()
       }, 500)
-      // this.$refs.list.$el.style.bottom = bottom
-      // 
     },
     ...mapActions([
       'selectPlay',
@@ -117,11 +114,12 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-.scroll-list-inner-wrap
+.list-wrapper
   position fixed
   top 50px
   width 100%
-  height calc(100% - 50px)
-  .list
-    container-padding()
+  bottom 0
+  .scroll-list-inner-wrap
+    .list
+      container-padding()
 </style>
