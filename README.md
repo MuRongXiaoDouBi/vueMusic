@@ -25,6 +25,7 @@ npm run build
 ## :mag_right: 项目展示
 
 ### 首页
+线上地址：[点击这里](http://show.imuboy.cn/music/ "点击这里")（浏览器调试模式观看更佳）
 
 ![首页](./static/images/首页.gif "首页")
 ![播放器](./static/images/player.gif "播放器")
