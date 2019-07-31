@@ -5,9 +5,10 @@
       ref="scroll"
       :data="playList"
       class="scroll-list-inner-wrap"
+      :options="options"
     >
       <swiper :data="banners"></swiper>
-      <albums-list :data="albums"/>
+      <albums-list @select="goList" :data="albums"/>
       <play-list :data="playList"/>
       <pop-list @select="selectItem" :data="popularList" />
     </cube-scroll>
@@ -34,7 +35,10 @@ export default {
       banners: [],
       playList: [],
       albums: [],
-      popularList: []
+      popularList: [],
+      options: {
+        click: false
+      }
     }
   },
   components: {
@@ -110,6 +114,14 @@ export default {
       this.selectPlay({
         list: this.popularList,
         index
+      })
+    },
+    goList(id) {
+      this.$router.push({
+        name: 'Albumlist',
+        params: {
+          id
+        }
       })
     },
     ...mapActions([

@@ -11,7 +11,7 @@
         nest-mode="native"
         class="list">
         <div class="list-wrapper">
-          <div class="item" v-for="(item, index) in data" :key="item.id">
+          <div class="item" v-for="(item, index) in data" @click="selectItem(item, index)" :key="item.id">
             <span class="img">
               <img v-lazy="item.imgUrl" alt="" class="img">
               <span class="img-bottom">
@@ -19,8 +19,8 @@
                 <i class="play iconfont" :class="item.id === songId && playing ? 'icon-suspend_icon' : 'icon-bofang'"></i>
               </span>
             </span>
-            <span class="title" @click="selectItem(item, index)">{{item.name}}</span>
-            <span class="desc" @click="selectItem(item, index)">{{item.artists}}</span>
+            <span class="title">{{item.name}}</span>
+            <span class="desc">{{item.artists}}</span>
           </div>
         </div>
       </cube-scroll>

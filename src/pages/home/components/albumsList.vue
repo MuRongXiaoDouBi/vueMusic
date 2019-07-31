@@ -10,11 +10,12 @@
         direction="horizontal"
         nest-mode="native"
         class="list"
+        :options="options"
       >
         <div class="list-wrapper" >
-          <div class="item" v-for="item in data" :key="item.id">
+          <div class="item" v-for="item in data" :key="item.id" @click.stop="goList(item.id)">
             <img v-lazy="item.imgUrl" alt="" class="img">
-            <span class="title" @click="goList(item.id, item.name)">{{item.name}}</span>
+            <span class="title">{{item.name}}</span>
             <span class="desc">{{item.artists}}</span>
           </div>
         </div>
@@ -26,6 +27,13 @@
 <script>
 import listTitle from 'components/listTitle/listTitle'
 export default {
+  data () {
+    return {
+      options: {
+        click: false
+      }
+    }
+  },
   props: {
     data: {
       type: Array
@@ -36,12 +44,7 @@ export default {
   },
   methods: {
     goList(id) {
-      this.$router.push({
-        name: 'Albumlist',
-        params: {
-          id
-        }
-      })
+      this.$emit('select', id)
     }
   }
 }
