@@ -20,5 +20,9 @@ export default new Router({
     path: '/albumlist/:id',
     name: 'Albumlist',
     component: () => import('pages/list/albumList')
+  }, {
+    path: '/tracklist/:id',
+    name: 'Tracklist',
+    component: () => import('pages/list/trackList')
   }]
 })

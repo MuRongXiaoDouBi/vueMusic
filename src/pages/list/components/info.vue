@@ -3,7 +3,7 @@
     <div class="container">
       <div class="img">
         <img v-lazy="info.imgUrl">
-        <span class="type">
+        <span class="type" v-if="info.type">
           {{info.type}}
         </span>
       </div>

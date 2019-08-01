@@ -8,8 +8,8 @@
       :options="options"
     >
       <swiper :data="banners"></swiper>
-      <albums-list @select="goList" :data="albums"/>
-      <play-list :data="playList"/>
+      <albums-list @select="goAlbumList" :data="albums"/>
+      <play-list @select="goTrackList" :data="playList"/>
       <pop-list @select="selectItem" :data="popularList" />
     </cube-scroll>
    </div>
@@ -26,7 +26,8 @@ import loading from 'components/loading/loading'
 import {initArtists, timeFormat, getSongUrl} from 'common/js/utils'
 import {Albums, SongsList} from 'common/js/class'
 import {playListMixin} from 'common/js/mixin'
-import { mapActions } from 'vuex';
+import { mapActions } from 'vuex'
+import {listType} from 'common/js/config'
 
 export default {
   mixins:[playListMixin],
@@ -116,11 +117,21 @@ export default {
         index
       })
     },
-    goList(id) {
+    goAlbumList(id) {
       this.$router.push({
         name: 'Albumlist',
         params: {
-          id
+          id,
+          type: listType.album
+        }
+      })
+    },
+    goTrackList(id) {
+      this.$router.push({
+        name: 'Tracklist',
+        params: {
+          id,
+          type: listType.track
         }
       })
     },

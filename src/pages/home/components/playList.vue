@@ -5,7 +5,7 @@
         <span>See All</span>
       </list-title>
       <div class="list">
-        <div class="item" v-for="item in data" :key="item.id">
+        <div class="item" v-for="item in data" @click="goList(item.id)" :key="item.id">
           <img v-lazy="item.picUrl" class="img">
           <div class="main">
             <div class="title">{{item.name}}</div>
@@ -28,6 +28,11 @@ export default {
   },
   components: {
     listTitle
+  },
+  methods: {
+    goList(id) {
+      this.$emit('select', id)
+    }
   }
 }
 </script>
