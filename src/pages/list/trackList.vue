@@ -23,7 +23,7 @@ import myList from './components/list'
 export default {
   data () {
     return {
-      title: 'PlayList',
+      title: 'TrackList',
       id: null
     }
   },
