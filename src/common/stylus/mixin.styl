@@ -1,0 +1,37 @@
+// 背景图片
+bg-image($url)
+  background-image: url($url + "@2x.png")
+  @media (-webkit-min-device-pixel-ratio: 3),(min-device-pixel-ratio: 3)
+    background-image: url($url + "@3x.png")
+
+// 不换行
+no-wrap()
+  text-overflow: ellipsis
+  overflow: hidden
+  word-wrap normal
+  white-space: nowrap
+// 多行不换行
+no-line-wrap($line)
+  overflow hidden
+  display: -webkit-box;
+  -webkit-line-clamp: $line;
+  -webkit-box-orient: vertical;
+// 扩展点击区域
+extend-click()
+  position: relative
+  &:before
+    content: ''
+    position: absolute
+    top: -10px
+    left: -10px
+    right: -10px
+    bottom: -10px
+
+// 布局默认padding
+container-padding()
+  padding: 0 18px
+  box-sizing: border-box
+
+// border默认
+border-default-1px()
+  border-bottom: 1px solid rgba(209,209,214,.2)
